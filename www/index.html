@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b4acb">
+<title>Namya</title>
+<style>
+:root{--bg:#f4f5f8;--sf:#fff;--ink:#161a2b;--mute:#6b7186;--line:#e3e6ee;--brand:#2b4acb;--bi:#fff;--danger:#c92a2a;--sh:0 1px 2px rgba(22,26,43,.05),0 6px 20px rgba(22,26,43,.05)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f111a;--sf:#181b27;--ink:#eceef6;--mute:#99a0b8;--line:#272b3b;--brand:#7c93ff;--bi:#0b0f24;--danger:#ff8787;--sh:none}}
+:root[data-theme=dark]{--bg:#0f111a;--sf:#181b27;--ink:#eceef6;--mute:#99a0b8;--line:#272b3b;--brand:#7c93ff;--bi:#0b0f24;--danger:#ff8787;--sh:none}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:calc(env(safe-area-inset-top) + 20px) 18px calc(120px + env(safe-area-inset-bottom))}
+main{max-width:560px;margin:0 auto}
+.hide{display:none!important}
+.date{margin:0;color:var(--mute);font-size:13px;font-weight:500}
+h1{margin:2px 0 2px;font-size:30px;font-weight:700;letter-spacing:-.02em}
+#summary{margin:0 0 22px;color:var(--mute)}
+.card{display:flex;align-items:center;gap:14px;background:var(--sf);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:var(--sh)}
+.card.off{opacity:.55}
+.ico{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center}
+.txt{flex:1;min-width:0}
+.txt b{display:block;font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txt span{display:block;color:var(--mute);font-size:13px}
+.when{color:var(--brand)!important;font-weight:600;margin-top:2px}
+.side{display:flex;align-items:center;gap:6px}
+.x{background:none;border:0;color:var(--mute);width:34px;height:34px;border-radius:10px;display:grid;place-items:center;cursor:pointer}
+.sw{position:relative;width:46px;height:28px;flex:none}
+.sw input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1}
+.sw i{position:absolute;inset:0;border-radius:99px;background:var(--line);transition:background .2s}
+.sw i::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.sw input:checked+i{background:var(--brand)}
+.sw input:checked+i::after{transform:translateX(18px)}
+.empty{text-align:center;color:var(--mute);padding:56px 24px}
+.empty .ico{margin:0 auto 14px;width:60px;height:60px;background:var(--line);color:var(--mute)}
+.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+.fab{position:fixed;left:18px;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));max-width:524px;margin:0 auto;height:54px;border:0;border-radius:16px;background:var(--brand);color:var(--bi);font:600 16px inherit;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 8px 24px rgba(43,74,203,.35)}
+.scrim{position:fixed;inset:0;background:rgba(10,12,24,.5);opacity:0;pointer-events:none;transition:opacity .2s;z-index:5}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-height:92%;overflow-y:auto;background:var(--sf);border-radius:22px 22px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .28s cubic-bezier(.2,.8,.2,1);z-index:6}
+.open .scrim{opacity:1;pointer-events:auto}.open .sheet{transform:none}
+.sheet>div{max-width:524px;margin:0 auto}
+.grab{width:38px;height:4px;border-radius:9px;background:var(--line);margin:0 auto 14px}
+.sheet h2{margin:0 0 14px;font-size:20px;letter-spacing:-.01em}
+label{display:block;font-size:13px;font-weight:600;color:var(--mute);margin:16px 0 6px}
+input[type=text],input[type=password],input[type=date],input[type=time],input[type=number]{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);padding:0 14px;font:inherit}
+input:focus-visible,button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
+.chip{flex:none;display:flex;align-items:center;gap:7px;height:40px;padding:0 13px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:500 14px inherit;font-family:inherit;cursor:pointer}
+.chip.on{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,transparent)}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
+.seg button{height:38px;border:0;border-radius:9px;background:none;color:var(--mute);font:600 13px inherit;font-family:inherit;cursor:pointer}
+.seg button.on{background:var(--sf);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.hint{font-size:12.5px;color:var(--mute);margin:6px 2px 0}
+.save{width:100%;height:52px;margin-top:22px;border:0;border-radius:14px;background:var(--brand);color:var(--bi);font:600 16px inherit;font-family:inherit;cursor:pointer}
+.err{color:var(--danger);font-size:13.5px;margin:10px 2px 0;min-height:18px}
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:9;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+#rep{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);padding:0 12px;font:inherit}
+.pop{position:fixed;inset:0;background:rgba(10,12,24,.62);display:none;align-items:center;justify-content:center;padding:24px;z-index:20}
+.pop.show{display:flex}
+.box{background:var(--sf);border-radius:22px;padding:26px 22px 22px;width:100%;max-width:360px;text-align:center}
+.box .ico{margin:0 auto 14px;width:58px;height:58px;border-radius:16px;background:color-mix(in srgb,var(--brand) 14%,transparent);color:var(--brand)}
+.box h3{margin:0 0 6px;font-size:21px;letter-spacing:-.01em}
+.box p{margin:0 0 20px;color:var(--mute)}
+.box button{width:100%;height:54px;border:0;border-radius:14px;background:var(--brand);color:var(--bi);font:600 17px inherit;font-family:inherit;cursor:pointer}
+.top{display:flex;justify-content:space-between;align-items:flex-start}
+.gear{margin-top:6px;background:var(--sf);border:1px solid var(--line)}
+.rowc{display:flex;gap:8px}.rowc input,.rowc select{flex:1}
+.ghost{height:48px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--brand);font:600 14px inherit;font-family:inherit;cursor:pointer;white-space:nowrap}
+textarea{width:100%;min-height:68px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);padding:12px 14px;font:inherit;resize:none}
+select{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);padding:0 12px;font:inherit}
+.seg.s3{grid-template-columns:repeat(3,1fr)}
+.cols{display:flex;gap:12px;flex-wrap:wrap}
+.col{width:36px;height:36px;border-radius:50%;border:3px solid transparent;cursor:pointer;padding:0}
+.col.on{border-color:var(--ink)}
+.fch{margin:0 0 14px}.fch .chip{height:34px;font-size:13px}
+#q{margin-bottom:12px}
+.note{font-size:13px}
+.box input{text-align:center;letter-spacing:.5em;font-size:22px;height:54px;margin-bottom:6px}
+.box .snz{background:none;color:var(--brand);height:46px;margin-top:6px;font-size:15px}
+#lock{z-index:30;background:var(--bg)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><div><p class="date" id="today"></p><h1>Reminders</h1></div>
+  <button class="x gear" id="gear" aria-label="Settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
+  <p id="summary"></p>
+  <input type="text" id="q" placeholder="Naam ya reminder dhundo" autocomplete="off">
+  <div class="chips fch" id="fch"></div>
+  <section id="list"></section>
+</main>
+
+<button class="fab" id="add"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Naya reminder</button>
+
+<div id="root">
+  <div class="scrim" id="scrim"></div>
+  <form class="sheet" id="sheet" onsubmit="return false" aria-label="Naya reminder">
+   <div>
+    <div class="grab"></div>
+    <h2 id="sh-title">Naya reminder</h2>
+    <div class="chips" id="chips"></div>
+
+    <div id="g-person"><label for="person">Kiske liye</label><div class="rowc"><input type="text" id="person" placeholder="Naam (optional)" autocomplete="off"><button type="button" class="ghost" id="pick">Contacts</button></div></div>
+    <label for="title">Reminder</label><input type="text" id="title" autocomplete="off">
+    <label for="note">Note (optional)</label><textarea id="note" placeholder="Jaise: gift lana hai"></textarea>
+
+    <label>Kab kab</label>
+    <div class="seg" id="seg">
+      <button type="button" data-k="once">Ek baar</button>
+      <button type="button" data-k="yearly">Har saal</button>
+      <button type="button" data-k="daily">Roz</button>
+      <button type="button" data-k="water">Ghante</button>
+    </div>
+
+    <div id="g-date"><label for="date" id="lbl-date">Date</label><input type="date" id="date"></div>
+    <div id="g-time"><label for="time">Time</label><input type="time" id="time" value="09:00"></div>
+    <div id="g-alarm"><label for="delay">Alarm, raat 12 ke kitne ghante baad</label><input type="number" id="delay" min="1" max="23" value="9">
+      <p class="hint">Raat 12 baje sirf ek notification (sound + vibration), baar baar nahi. Asli popup alarm isi time pe aayega.</p></div>
+    <div id="g-water"><label>Din ke kis ghante se kis ghante tak, aur har kitne ghante me</label>
+      <div class="row"><input type="number" id="from" min="0" max="23" value="8" aria-label="Shuru ka ghanta"><input type="number" id="to" min="0" max="23" value="22" aria-label="Khatam ka ghanta"><input type="number" id="every" min="1" max="12" value="1" aria-label="Har kitne ghante"></div>
+      <p class="hint">Shuru, khatam, interval (ghante me)</p></div>
+
+    <div id="g-rep"><label for="rep">Done na dabane pe har 5 min me dohrao</label>
+      <select id="rep"><option value="6">30 minute tak</option><option value="12" selected>1 ghante tak</option><option value="24">2 ghante tak</option><option value="36">3 ghante tak</option></select>
+      <p class="hint">Paani wale reminder me max 30 minute tak dohrayega.</p></div>
+    <div class="err" id="err" role="alert"></div>
+    <button class="save" id="save">Reminder lagao</button>
+   </div>
+  </form>
+</div>
+<div class="toast" id="toast"></div>
+<div class="pop" id="pop" role="alertdialog" aria-modal="true"><div class="box"><div class="ico" id="pico"></div><h3 id="pt"></h3><p>Kaam ho gaya? Done dabao, warna har 5 minute me phir yaad dilaunga.</p><button id="pd">Done</button><button class="snz" id="ps">10 minute baad yaad dilao</button></div></div>
+<div id="root2"><div class="scrim" id="scrim2"></div>
+  <div class="sheet" id="sset" aria-label="Settings"><div>
+    <div class="grab"></div><h2>Settings</h2>
+    <label>Theme</label><div class="seg s3" id="thm"><button type="button" data-t="auto">Auto</button><button type="button" data-t="light">Light</button><button type="button" data-t="dark">Dark</button></div>
+    <label>App ka rang</label><div class="cols" id="cols"></div>
+    <label>Notification ki awaaz</label><div class="rowc"><div style="flex:1;align-self:center;font-weight:600">Biwa Roll</div><button type="button" class="ghost" id="psnd">Sunao</button></div>
+    <label for="pin">App lock (PIN)</label><div class="rowc"><input type="password" inputmode="numeric" maxlength="4" id="pin" placeholder="4 ank ka PIN"><button type="button" class="ghost" id="pinset">Lagao</button></div><p class="hint" id="pinst"></p>
+    <label>Backup</label><div class="rowc"><button type="button" class="ghost" id="exp" style="flex:1">Backup banao</button><button type="button" class="ghost" id="imp" style="flex:1">Restore karo</button></div>
+    <input type="file" id="file" accept=".json,application/json" class="hide">
+    <button class="save" id="sclose">Band karo</button>
+  </div></div></div>
+<div class="pop" id="lock" role="dialog" aria-modal="true"><div class="box"><h3>App lock hai</h3><p>PIN daalo</p><input type="password" inputmode="numeric" maxlength="4" id="lpin" aria-label="PIN"><div class="err" id="lerr" role="alert"></div></div></div>
+
+<script>
+const LN = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
+const $ = id => document.getElementById(id);
+const CH_R = 'yd_reminder_v2', CH_A = 'yd_alarm_v2', KEY = 'reminders_v3';
+const ic = p => '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + p + '"/></svg>';
+const CATS = {
+  bday:  { n: 'Birthday',    t: 'Birthday',     k: 'yearly', c: '#d9480f', p: 'M20 12v9H4v-9M2 7h20v5H2zM12 21V7M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z' },
+  anniv: { n: 'Anniversary', t: 'Anniversary',  k: 'yearly', c: '#c2255c', p: 'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z' },
+  water: { n: 'Paani',       t: 'Paani peena',  k: 'water',  c: '#1c7ed6', p: 'M12 2.7s7 7.2 7 12a7 7 0 0 1-14 0c0-4.8 7-12 7-12z' },
+  med:   { n: 'Dawai',       t: 'Dawai lena',   k: 'daily',  c: '#2f9e44', p: 'M10.5 20.5a5 5 0 0 1-7-7l10-10a5 5 0 0 1 7 7zM8.5 8.5l7 7' },
+  pay:   { n: 'Payment',     t: 'Payment due',  k: 'once',   c: '#9c36b5', p: 'M6 3h12M6 8h12M6 13h3c5 0 7-3 7-5M9 13l7 8' },
+  meet:  { n: 'Meeting',     t: 'Meeting',      k: 'once',   c: '#3b5bdb', p: 'M3 5h18v16H3zM3 10h18M8 3v4M16 3v4' },
+  other: { n: 'Aur',         t: '',             k: 'once',   c: '#495057', p: 'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M10.3 21a2 2 0 0 0 3.4 0' }
+};
+let items = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; } })();
+const store = () => { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch (e) {} };
+const nextId = () => { let n = 1; try { n = +(localStorage.getItem('nid') || 1); localStorage.setItem('nid', n + 1); } catch (e) {} return n; };
+let cat = 'bday', kind = 'yearly';
+
+function el(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function toast(t) { const e = $('toast'); e.textContent = t; e.classList.add('show'); setTimeout(() => e.classList.remove('show'), 2200); }
+const fmt = d => d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+
+/* ---------- scheduling ---------- */
+const STEP = 5 * 60e3;
+const SND = 'biwa_roll.wav';
+const chan = (r, c) => c;
+async function makeChannels() {
+  await LN.createChannel({ id: CH_R, name: 'Reminders', description: 'Sound and vibration reminders', importance: 4, vibration: true, visibility: 1, sound: SND });
+  await LN.createChannel({ id: CH_A, name: 'Alarm', description: 'Repeating alarm', importance: 5, vibration: true, visibility: 1, sound: SND });
+}
+const titleOf = r => r.person ? r.person + ' - ' + r.title : r.title;
+const mkr = r => (s, k, sched, ch, body) => ({ id: r.ids[s][k], title: titleOf(r), body: k ? 'Abhi tak Done nahi kiya' : (r.note || body), channelId: chan(r, ch), actionTypeId: 'DONE', extra: { rid: r.id, slot: s, k }, schedule: { ...sched, allowWhileIdle: true } });
+const slotsOf = r => r.kind === 'daily' ? [r.time.split(':').map(Number)] : (r.hours || []).map(h => [h, 0]);
+function at0(h, m, add, tomorrow) { const n = new Date(); let x = new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, m).getTime() + add; if (tomorrow || x <= Date.now()) x += 864e5; return new Date(x); }
+const alarmBase = (r, y) => { const d = new Date(r.date + 'T00:00'); return new Date(y, d.getMonth(), d.getDate()).getTime() + r.delay * 3600e3; };
+function yearlyFollow(r) {
+  const mk = mkr(r), now = Date.now(); let y = new Date().getFullYear();
+  if (alarmBase(r, y) + r.n * STEP <= now) y++;
+  if (r.doneY === y) return [];
+  const out = [];
+  for (let k = 1; k <= r.n; k++) { const at = alarmBase(r, y) + k * STEP; if (at > now) out.push(mk(1, k, { at: new Date(at) }, CH_A, '')); }
+  return out;
+}
+function build(r) {
+  const mk = mkr(r), out = [], now = Date.now(), BODY = 'Aaj ka din hai';
+  if (r.kind === 'once') {
+    const d0 = new Date(r.date + 'T00:00');
+    if (d0.getTime() > now) out.push(mk(0, 0, { at: d0 }, CH_R, BODY));
+    for (let k = 0; k <= r.n; k++) { const at = new Date(d0.getTime() + r.delay * 3600e3 + k * STEP); if (at.getTime() > now) out.push(mk(1, k, { at }, CH_A, BODY)); }
+  } else if (r.kind === 'yearly') {
+    const d0 = new Date(r.date + 'T00:00'), m = d0.getMonth() + 1, d = d0.getDate();
+    out.push(mk(0, 0, { on: { month: m, day: d, hour: 0, minute: 0 } }, CH_R, BODY));
+    out.push(mk(1, 0, { on: { month: m, day: d, hour: r.delay, minute: 0 } }, CH_A, BODY));
+    out.push(...yearlyFollow(r));
+  } else {
+    const body = r.kind === 'water' ? 'Paani peene ka time ho gaya' : 'Yaad dilane ka time ho gaya';
+    slotsOf(r).forEach(([h, m], s) => {
+      out.push(mk(s, 0, { on: { hour: h, minute: m } }, CH_R, body));
+      for (let k = 1; k <= r.n; k++) out.push(mk(s, k, { at: at0(h, m, k * STEP, false), repeats: true, every: 'day' }, CH_A, body));
+    });
+  }
+  return out;
+}
+async function schedule(r) {
+  if (!LN) return true;
+  try {
+    const p = await LN.requestPermissions();
+    if (p.display !== 'granted') { $('err').textContent = 'Settings me notification allow karo, tabhi reminder bajega.'; return false; }
+    await makeChannels(r);
+    const n = build(r); if (n.length) await LN.schedule({ notifications: n });
+    return true;
+  } catch (e) { $('err').textContent = 'Reminder set nahi hua: ' + e.message; return false; }
+}
+const cancel = r => LN ? LN.cancel({ notifications: r.ids.flat().concat(r.sid ? [r.sid] : []).map(id => ({ id })) }).catch(() => {}) : Promise.resolve();
+
+/* Done dabane pe baki 5-minute repeats band */
+async function done(x) {
+  if (!x) return;
+  const r = items.find(i => i.id === x.rid); if (!r) return;
+  const s = x.slot, dateKind = r.kind === 'once' || r.kind === 'yearly';
+  try {
+    if (LN && r.sid) { try { await LN.cancel({ notifications: [{ id: r.sid }] }); } catch (e) {} }
+    if (!(dateKind && s === 0)) {
+      const from = r.kind === 'once' ? 0 : 1;
+      if (LN) await LN.cancel({ notifications: r.ids[s].slice(from).map(id => ({ id })) });
+      if (r.kind === 'daily' || r.kind === 'water') {
+        const [h, m] = slotsOf(r)[s], mk = mkr(r), list = [];
+        for (let k = 1; k <= r.n; k++) list.push(mk(s, k, { at: at0(h, m, k * STEP, true), repeats: true, every: 'day' }, CH_A, ''));
+        if (LN && list.length) await LN.schedule({ notifications: list });
+      }
+      if (r.kind === 'yearly') { const cy = new Date().getFullYear(); r.doneY = alarmBase(r, cy) <= Date.now() ? cy : cy - 1; store(); }
+    }
+    if (LN) { const d = await LN.getDeliveredNotifications(); const mine = (d.notifications || []).filter(n => n.extra && n.extra.rid === r.id); if (mine.length) await LN.removeDeliveredNotifications({ notifications: mine }); }
+  } catch (e) {}
+}
+let cur = null;
+function popup(n) {
+  if (!n || !n.extra || !n.extra.rid) return;
+  cur = n.extra; $('pt').textContent = n.title || 'Reminder'; $('pico').innerHTML = ic(CATS.other.p); $('pop').classList.add('show');
+  try { navigator.vibrate && navigator.vibrate([500, 200, 500, 200, 500]); } catch (e) {}
+}
+$('ps').onclick = async () => { $('pop').classList.remove('show'); const c = cur; cur = null; await snooze(c); render(); };
+$('pd').onclick = async () => { $('pop').classList.remove('show'); const c = cur; cur = null; await done(c); render(); toast('Done'); };
+async function checkDelivered() {
+  if (!LN || cur) return;
+  try { const d = await LN.getDeliveredNotifications(); const n = (d.notifications || []).find(x => x.extra && x.extra.rid); if (n) popup(n); } catch (e) {}
+}
+async function rearm() {
+  if (!LN) return;
+  for (const r of items) if (r.on && r.kind === 'yearly') { const l = yearlyFollow(r); if (l.length) { try { await LN.schedule({ notifications: l }); } catch (e) {} } }
+}
+
+async function snooze(x) {
+  if (!x) return; const r = items.find(i => i.id === x.rid); if (!r) return;
+  await done(x); if (!r.sid) { r.sid = nextId(); store(); }
+  if (LN) { try { await LN.schedule({ notifications: [{ id: r.sid, title: titleOf(r), body: 'Snooze ke baad yaad dilana', channelId: chan(r, CH_A), actionTypeId: 'DONE', extra: { rid: r.id, slot: x.slot, k: 0 }, schedule: { at: new Date(Date.now() + 600e3), allowWhileIdle: true } }] }); } catch (e) {} }
+  toast('10 minute baad yaad dilaunga');
+}
+
+/* ---------- settings ---------- */
+const SKEY = 'yd_settings_v1';
+let S = { theme: 'auto', accent: 0, pin: '' };
+try { S = { ...S, ...JSON.parse(localStorage.getItem(SKEY)) }; } catch (e) {}
+const saveS = () => { try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch (e) {} };
+const ACC = [['#2b4acb', '#7c93ff'], ['#0e7490', '#4fd1c5'], ['#2f855a', '#68d391'], ['#6b46c1', '#b794f4'], ['#c05621', '#f6ad55'], ['#b83280', '#f687b3']];
+function applyTheme() {
+  const root = document.documentElement;
+  if (S.theme === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', S.theme);
+  const dark = S.theme === 'dark' || (S.theme === 'auto' && matchMedia('(prefers-color-scheme:dark)').matches);
+  root.style.setProperty('--brand', (ACC[S.accent] || ACC[0])[dark ? 1 : 0]);
+}
+try { matchMedia('(prefers-color-scheme:dark)').addEventListener('change', applyTheme); } catch (e) {}
+async function hashPin(p) { try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('yd|' + p)); return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join(''); } catch (e) { return 'x' + btoa(p); } }
+function lockNow() { if (S.pin) { $('lpin').value = ''; $('lerr').textContent = ''; $('lock').classList.add('show'); setTimeout(() => $('lpin').focus(), 60); } }
+function pinUI() { $('pinst').textContent = S.pin ? 'PIN chalu hai. Hatane ke liye box khali rakhke "Badlo / Hatao" dabao.' : 'PIN band hai.'; $('pinset').textContent = S.pin ? 'Badlo / Hatao' : 'Lagao'; }
+function settingsUI() {
+  document.querySelectorAll('#thm button').forEach(b => b.classList.toggle('on', b.dataset.t === S.theme));
+  document.querySelectorAll('.col').forEach((b, i) => b.classList.toggle('on', i === S.accent));
+  pinUI();
+}
+async function exportData() {
+  const data = JSON.stringify({ app: 'yaad', v: 3, items, settings: { ...S, pin: '' } }), name = 'backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  const P = window.Capacitor && window.Capacitor.Plugins || {};
+  try {
+    if (P.Filesystem && P.Share) { const f = await P.Filesystem.writeFile({ path: name, data, directory: 'CACHE', encoding: 'utf8' }); await P.Share.share({ title: 'Reminder backup', url: f.uri }); }
+    else { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' })); a.download = name; a.click(); }
+  } catch (e) { toast('Backup nahi bana'); }
+}
+function importData(file) {
+  const rd = new FileReader();
+  rd.onload = async () => {
+    try {
+      const d = JSON.parse(rd.result); if (!d || !Array.isArray(d.items)) throw 0;
+      const ok = d.items.filter(r => r && r.kind && Array.isArray(r.ids) && r.title);
+      if (!confirm(ok.length + ' reminder restore karein? Abhi ke reminders hat jayenge.')) return;
+      for (const r of items) await cancel(r);
+      items = ok; if (d.settings) { S = { ...S, ...d.settings, pin: S.pin }; saveS(); applyTheme(); }
+      const mx = Math.max(1000, ...items.flatMap(r => r.ids.flat())); try { localStorage.setItem('nid', String(mx + 1000)); } catch (e) {}
+      store(); for (const r of items) if (r.on) await schedule(r);
+      render(); toast('Restore ho gaya');
+    } catch (e) { toast('File sahi nahi hai'); }
+  };
+  rd.readAsText(file);
+}
+async function pickContact() {
+  const CT = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Contacts;
+  if (!CT) { toast('Contacts phone app me chalega'); return; }
+  try {
+    const res = await CT.pickContact({ projection: { name: true, birthday: true } }), c = res.contact || res, n = c.name || {};
+    const nm = n.display || [n.given, n.family].filter(Boolean).join(' '); if (nm) $('person').value = nm;
+    const b = c.birthday; if (b && b.month && b.day) { const y = b.year || new Date().getFullYear(); $('date').value = y + '-' + String(b.month).padStart(2, '0') + '-' + String(b.day).padStart(2, '0'); if (cat === 'bday') setKind('yearly'); }
+  } catch (e) { toast('Contact nahi mila, naam haath se likho'); }
+}
+
+/* ---------- list ---------- */
+function nextAt(r) {
+  const n = new Date(), t0 = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  if (r.kind === 'once') return new Date(r.date + 'T00:00');
+  if (r.kind === 'yearly') { const d = new Date(r.date + 'T00:00'); const x = new Date(n.getFullYear(), d.getMonth(), d.getDate()); if (x < t0) x.setFullYear(x.getFullYear() + 1); return x; }
+  if (r.kind === 'daily') { const [h, m] = r.time.split(':').map(Number); const x = new Date(t0.getTime()); x.setHours(h, m); if (x < n) x.setDate(x.getDate() + 1); return x; }
+  const h = r.hours.find(h => h > n.getHours()); const x = new Date(t0.getTime());
+  if (h == null) { x.setDate(x.getDate() + 1); x.setHours(r.hours[0]); } else x.setHours(h);
+  return x;
+}
+function whenText(r) {
+  const x = nextAt(r), t0 = new Date(); t0.setHours(0, 0, 0, 0);
+  const diff = Math.round((new Date(x.getFullYear(), x.getMonth(), x.getDate()) - t0) / 864e5);
+  if (r.kind === 'once' && diff < 0) return 'Ho chuka';
+  return diff === 0 ? 'Aaj' : diff === 1 ? 'Kal' : fmt(x);
+}
+function detail(r) {
+  const pad = n => String(n).padStart(2, '0');
+  if (r.kind === 'once') return 'Raat 12 baje notification, ' + pad(r.delay) + ':00 baje alarm';
+  if (r.kind === 'yearly') return 'Har saal ' + fmt(new Date(r.date + 'T00:00')) + ', alarm ' + pad(r.delay) + ':00 baje';
+  if (r.kind === 'daily') return 'Roz ' + r.time + ' baje';
+  return 'Har ' + (r.every > 1 ? r.every + ' ghante' : 'ghante') + ', ' + pad(r.from) + ':00 se ' + pad(r.to) + ':00';
+}
+let qs = '', fc = 'all';
+function ageText(r) {
+  if (r.kind !== 'yearly' || r.cat !== 'bday') return '';
+  const a = nextAt(r).getFullYear() - +r.date.slice(0, 4); return a > 0 && a < 130 ? 'Is baar ' + a + ' saal' : '';
+}
+function fchips() {
+  const box = $('fch'); box.textContent = ''; const used = [...new Set(items.map(r => r.cat))];
+  box.classList.toggle('hide', used.length < 2); if (used.length < 2) { fc = 'all'; return; }
+  ['all', ...used].forEach(k => { const b = el('button', 'chip' + (fc === k ? ' on' : ''), k === 'all' ? 'Sab' : (CATS[k] || CATS.other).n); b.type = 'button'; b.onclick = () => { fc = k; render(); }; box.appendChild(b); });
+}
+function render() {
+  const list = $('list'); list.textContent = '';
+  $('today').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+  const sorted = items.filter(r => (fc === 'all' || r.cat === fc) && (!qs || (r.person + ' ' + r.title + ' ' + (r.note || '')).toLowerCase().includes(qs))).sort((a, b) => (b.on - a.on) || (nextAt(a) - nextAt(b)));
+  const todayN = items.filter(r => r.on && whenText(r) === 'Aaj').length;
+  fchips(); $('q').classList.toggle('hide', !items.length);
+  $('summary').textContent = !items.length ? '' : todayN ? 'Aaj ' + todayN + ' reminder hain.' : 'Aaj koi reminder nahi hai.';
+  if (!items.length) {
+    const e = el('div', 'empty'); const i = el('div', 'ico'); i.innerHTML = ic(CATS.other.p);
+    e.append(i, el('b', null, 'Abhi koi reminder nahi'), el('span', null, 'Neeche se pehla reminder lagao.')); list.appendChild(e); return;
+  }
+  if (items.length && !sorted.length) list.appendChild(el('div', 'empty', 'Kuch nahi mila.'));
+  sorted.forEach(r => {
+    const c = CATS[r.cat] || CATS.other, card = el('div', 'card' + (r.on ? '' : ' off'));
+    const i = el('div', 'ico'); i.style.background = c.c + '1f'; i.style.color = c.c; i.innerHTML = ic(c.p);
+    const t = el('div', 'txt'); t.append(el('b', null, r.person || r.title));
+    if (r.person) t.append(el('span', null, r.title));
+    if (r.note) t.append(el('span', 'note', r.note));
+    const ag = ageText(r); if (ag) t.append(el('span', null, ag));
+    t.style.cursor = 'pointer'; t.onclick = () => openSheet(r);
+    t.append(el('span', null, detail(r)), el('span', 'when', whenText(r)));
+    const side = el('div', 'side');
+    const x = el('button', 'x'); x.type = 'button'; x.setAttribute('aria-label', 'Hatao');
+    x.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+    x.onclick = async () => { if (!confirm('Ye reminder hata dein?')) return; await cancel(r); items = items.filter(z => z.id !== r.id); store(); render(); };
+    const sw = el('label', 'sw'); sw.style.margin = '0'; const cb = el('input'); cb.type = 'checkbox'; cb.checked = r.on; cb.setAttribute('aria-label', 'Chalu / band'); sw.append(cb, el('i'));
+    cb.onchange = async () => { r.on = cb.checked; if (r.on) { if (!await schedule(r)) { r.on = false; } } else await cancel(r); store(); render(); };
+    side.append(x, sw); card.append(i, t, side); list.appendChild(card);
+  });
+}
+
+/* ---------- form ---------- */
+function setKind(k) {
+  kind = k;
+  document.querySelectorAll('#seg button').forEach(b => b.classList.toggle('on', b.dataset.k === k));
+  $('g-date').classList.toggle('hide', !(k === 'once' || k === 'yearly'));
+  $('g-alarm').classList.toggle('hide', !(k === 'once' || k === 'yearly'));
+  $('g-time').classList.toggle('hide', k !== 'daily');
+  $('g-water').classList.toggle('hide', k !== 'water');
+  $('lbl-date').textContent = k === 'yearly' ? 'Date (saal koi bhi chalega)' : 'Date';
+}
+function setCat(k) {
+  const defs = Object.values(CATS).map(c => c.t);
+  cat = k; document.querySelectorAll('.chip').forEach(b => b.classList.toggle('on', b.dataset.c === k));
+  if (!$('title').value || defs.includes($('title').value)) $('title').value = CATS[k].t;
+  $('g-person').classList.toggle('hide', k === 'water');
+  setKind(CATS[k].k);
+}
+let editId = null;
+function openSheet(r) {
+  editId = r ? r.id : null; $('err').textContent = '';
+  $('sh-title').textContent = r ? 'Reminder badlo' : 'Naya reminder'; $('save').textContent = r ? 'Save karo' : 'Reminder lagao';
+  $('person').value = r ? r.person : ''; $('title').value = ''; $('note').value = r ? (r.note || '') : ''; $('date').value = r ? (r.date || '') : '';
+  $('rep').value = String(r ? r.n : 12);
+  setCat(r ? r.cat : 'bday');
+  if (r) {
+    $('title').value = r.title; setKind(r.kind);
+    if (r.time) $('time').value = r.time; if (r.delay) $('delay').value = r.delay;
+    if (r.kind === 'water') { $('from').value = r.from; $('to').value = r.to; $('every').value = r.every; }
+  }
+  $('root').classList.add('open');
+}
+function closeSheet() { $('root').classList.remove('open'); }
+
+Object.entries(CATS).forEach(([k, c]) => {
+  const b = el('button', 'chip'); b.type = 'button'; b.dataset.c = k;
+  const s = el('span'); s.style.color = c.c; s.style.display = 'flex'; s.innerHTML = ic(c.p); b.append(s, el('span', null, c.n));
+  b.onclick = () => setCat(k); $('chips').appendChild(b);
+});
+document.querySelectorAll('#seg button').forEach(b => b.onclick = () => setKind(b.dataset.k));
+$('add').onclick = () => openSheet(); $('scrim').onclick = closeSheet;
+
+$('save').onclick = async () => {
+  const err = $('err'); err.textContent = '';
+  const title = $('title').value.trim(); if (!title) { err.textContent = 'Reminder ka naam likho.'; return; }
+  const r = { id: Date.now(), cat, kind, title, person: $('person').value.trim(), note: $('note').value.trim(), on: true };
+  r.n = Math.max(1, Math.min(+$('rep').value || 12, kind === 'water' ? 6 : 36));
+  const ids = () => Array.from({ length: r.n + 1 }, () => nextId());
+  if (kind === 'once' || kind === 'yearly') {
+    if (!$('date').value) { err.textContent = 'Date chuno.'; return; }
+    r.date = $('date').value; r.delay = Math.min(23, Math.max(1, +$('delay').value || 9));
+    if (kind === 'once' && new Date(r.date + 'T00:00').getTime() + r.delay * 3600e3 + r.n * STEP <= Date.now()) { err.textContent = 'Ye date aur alarm time nikal chuka hai. Aage ki date chuno.'; return; }
+    r.ids = [[nextId()], ids()];
+  } else if (kind === 'daily') {
+    r.time = $('time').value || '09:00'; r.ids = [ids()];
+  } else {
+    r.from = +$('from').value; r.to = +$('to').value; r.every = Math.max(1, +$('every').value || 1);
+    if (r.to < r.from) { err.textContent = 'Khatam ka ghanta shuru se bada hona chahiye.'; return; }
+    r.hours = []; for (let h = r.from; h <= r.to; h += r.every) r.hours.push(h);
+    r.ids = r.hours.map(() => ids());
+  }
+  let old = null;
+  if (editId) { old = items.find(i => i.id === editId); if (old) { r.id = old.id; r.on = old.on; r.sid = old.sid; await cancel(old); } }
+  if (r.on && !await schedule(r)) { if (old && old.on) await schedule(old); return; }
+  items = editId ? items.map(i => i.id === editId ? r : i) : [...items, r];
+  store(); render(); closeSheet(); toast(editId ? 'Badlav save ho gaya' : (LN ? 'Reminder lag gaya' : 'Saved (notification sirf phone app me bajegi)'));
+};
+
+/* ---------- wiring ---------- */
+$('q').oninput = () => { qs = $('q').value.trim().toLowerCase(); render(); };
+$('pick').onclick = pickContact;
+$('gear').onclick = () => { settingsUI(); $('root2').classList.add('open'); };
+$('scrim2').onclick = $('sclose').onclick = () => $('root2').classList.remove('open');
+ACC.forEach((c, i) => { const b = el('button', 'col'); b.type = 'button'; b.style.background = c[0]; b.setAttribute('aria-label', 'Rang ' + (i + 1)); b.onclick = () => { S.accent = i; saveS(); applyTheme(); settingsUI(); }; $('cols').appendChild(b); });
+document.querySelectorAll('#thm button').forEach(b => b.onclick = () => { S.theme = b.dataset.t; saveS(); applyTheme(); settingsUI(); });
+$('psnd').onclick = () => { try { new Audio('sounds/biwa_roll.wav').play(); } catch (e) {} };
+$('pinset').onclick = async () => {
+  const v = $('pin').value;
+  if (S.pin && !v) { S.pin = ''; saveS(); pinUI(); toast('PIN hata diya'); return; }
+  if (!/^\d{4}$/.test(v)) { toast('4 ank ka PIN daalo'); return; }
+  S.pin = await hashPin(v); saveS(); $('pin').value = ''; pinUI(); toast('PIN lag gaya');
+};
+$('lpin').oninput = async () => { if ($('lpin').value.length === 4) { if (await hashPin($('lpin').value) === S.pin) $('lock').classList.remove('show'); else { $('lerr').textContent = 'Galat PIN'; $('lpin').value = ''; } } };
+let away = 0;
+document.addEventListener('visibilitychange', () => { if (document.hidden) away = Date.now(); else if (S.pin && Date.now() - away > 8000) lockNow(); });
+$('exp').onclick = exportData; $('imp').onclick = () => $('file').click();
+$('file').onchange = ev => { const f = ev.target.files[0]; if (f) importData(f); ev.target.value = ''; };
+applyTheme(); lockNow();
+
+if (LN) {
+  LN.registerActionTypes({ types: [{ id: 'DONE', actions: [{ id: 'done', title: 'Done' }, { id: 'snooze', title: '10 min baad' }] }] }).catch(() => {});
+  LN.addListener('localNotificationReceived', popup);
+  LN.addListener('localNotificationActionPerformed', e => { if (e.actionId === 'done') done(e.notification.extra).then(render); else if (e.actionId === 'snooze') snooze(e.notification.extra).then(render); else popup(e.notification); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { checkDelivered(); rearm(); } });
+  checkDelivered(); rearm();
+}
+render();
+</script>
+</body>
+</html>
