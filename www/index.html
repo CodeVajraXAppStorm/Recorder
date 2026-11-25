@@ -58,12 +58,15 @@ input:focus-visible,button:focus-visible{outline:2px solid var(--brand);outline-
 .toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:9;white-space:nowrap}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 #rep{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);padding:0 12px;font:inherit}
-.pop{position:fixed;inset:0;background:rgba(10,12,24,.62);display:none;align-items:center;justify-content:center;padding:24px;z-index:20}
+.pop{position:fixed;inset:0;background:rgba(10,12,24,.62);display:none;align-items:flex-end;justify-content:center;z-index:20}
 .pop.show{display:flex}
-.box{background:var(--sf);border-radius:22px;padding:26px 22px 22px;width:100%;max-width:360px;text-align:center}
+.box{background:var(--sf);border-radius:26px 26px 0 0;padding:12px 22px calc(24px + env(safe-area-inset-bottom));width:100%;max-width:560px;text-align:center;animation:up .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.box .grab{margin:0 auto 18px}
 .box .ico{margin:0 auto 14px;width:58px;height:58px;border-radius:16px;background:color-mix(in srgb,var(--brand) 14%,transparent);color:var(--brand)}
 .box h3{margin:0 0 6px;font-size:21px;letter-spacing:-.01em}
-.box p{margin:0 0 20px;color:var(--mute)}
+.box p{margin:0 0 18px;color:var(--mute)}
+.box .pn{color:var(--ink);font-size:16px;margin:0 0 6px}
 .box button{width:100%;height:54px;border:0;border-radius:14px;background:var(--brand);color:var(--bi);font:600 17px inherit;font-family:inherit;cursor:pointer}
 .top{display:flex;justify-content:space-between;align-items:flex-start}
 .gear{margin-top:6px;background:var(--sf);border:1px solid var(--line)}
@@ -80,7 +83,8 @@ select{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;ba
 .note{font-size:13px}
 .box input{text-align:center;letter-spacing:.5em;font-size:22px;height:54px;margin-bottom:6px}
 .box .snz{background:none;color:var(--brand);height:46px;margin-top:6px;font-size:15px}
-#lock{z-index:30;background:var(--bg)}
+#lock{z-index:30;background:var(--bg);align-items:center;padding:24px}
+#lock .box{border-radius:22px;max-width:360px;padding:26px 22px;animation:none}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -89,6 +93,7 @@ select{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;ba
   <div class="top"><div><p class="date" id="today"></p><h1>Reminders</h1></div>
   <button class="x gear" id="gear" aria-label="Settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
   <p id="summary"></p>
+  <div class="card hide" id="perm"><div class="txt"><b id="perm-t"></b><span id="perm-s"></span></div><button type="button" class="ghost" id="permbtn">Chalu karo</button></div>
   <input type="text" id="q" placeholder="Naam ya reminder dhundo" autocomplete="off">
   <div class="chips fch" id="fch"></div>
   <section id="list"></section>
@@ -133,7 +138,7 @@ select{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;ba
   </form>
 </div>
 <div class="toast" id="toast"></div>
-<div class="pop" id="pop" role="alertdialog" aria-modal="true"><div class="box"><div class="ico" id="pico"></div><h3 id="pt"></h3><p>Kaam ho gaya? Done dabao, warna har 5 minute me phir yaad dilaunga.</p><button id="pd">Done</button><button class="snz" id="ps">10 minute baad yaad dilao</button></div></div>
+<div class="pop" id="pop" role="alertdialog" aria-modal="true"><div class="box"><div class="grab"></div><div class="ico" id="pico"></div><h3 id="pt"></h3><p class="pn" id="pn"></p><p>Kaam ho gaya? Done dabao. Nahi dabaya to har 5 minute me phir yaad dilaunga.</p><button id="pd">Done</button><button class="snz" id="ps">10 minute baad yaad dilao</button></div></div>
 <div id="root2"><div class="scrim" id="scrim2"></div>
   <div class="sheet" id="sset" aria-label="Settings"><div>
     <div class="grab"></div><h2>Settings</h2>
@@ -149,6 +154,8 @@ select{width:100%;height:48px;border:1px solid var(--line);border-radius:12px;ba
 
 <script>
 const LN = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
+const OP = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.OverlayPopup;
+const NATIVE = !!OP;
 const $ = id => document.getElementById(id);
 const CH_R = 'yd_reminder_v2', CH_A = 'yd_alarm_v2', KEY = 'reminders_v3';
 const ic = p => '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + p + '"/></svg>';
@@ -196,18 +203,34 @@ function build(r) {
   if (r.kind === 'once') {
     const d0 = new Date(r.date + 'T00:00');
     if (d0.getTime() > now) out.push(mk(0, 0, { at: d0 }, CH_R, BODY));
-    for (let k = 0; k <= r.n; k++) { const at = new Date(d0.getTime() + r.delay * 3600e3 + k * STEP); if (at.getTime() > now) out.push(mk(1, k, { at }, CH_A, BODY)); }
+    for (let k = 0; k <= (NATIVE ? 0 : r.n); k++) { const at = new Date(d0.getTime() + r.delay * 3600e3 + k * STEP); if (at.getTime() > now) out.push(mk(1, k, { at }, CH_A, BODY)); }
   } else if (r.kind === 'yearly') {
     const d0 = new Date(r.date + 'T00:00'), m = d0.getMonth() + 1, d = d0.getDate();
     out.push(mk(0, 0, { on: { month: m, day: d, hour: 0, minute: 0 } }, CH_R, BODY));
     out.push(mk(1, 0, { on: { month: m, day: d, hour: r.delay, minute: 0 } }, CH_A, BODY));
-    out.push(...yearlyFollow(r));
+    if (!NATIVE) out.push(...yearlyFollow(r));
   } else {
     const body = r.kind === 'water' ? 'Paani peene ka time ho gaya' : 'Yaad dilane ka time ho gaya';
     slotsOf(r).forEach(([h, m], s) => {
       out.push(mk(s, 0, { on: { hour: h, minute: m } }, CH_R, body));
-      for (let k = 1; k <= r.n; k++) out.push(mk(s, k, { at: at0(h, m, k * STEP, false), repeats: true, every: 'day' }, CH_A, body));
+      for (let k = 1; k <= (NATIVE ? 0 : r.n); k++) out.push(mk(s, k, { at: at0(h, m, k * STEP, false), repeats: true, every: 'day' }, CH_A, body));
     });
+  }
+  return out;
+}
+const nativeKeys = r => (r.kind === 'once' || r.kind === 'yearly') ? [r.id + '_1'] : slotsOf(r).map((_, i) => r.id + '_' + i);
+function nativeEntries(r) {
+  const T = titleOf(r), now = Date.now(), out = [];
+  if (r.kind === 'once') {
+    const at = new Date(r.date + 'T00:00').getTime() + r.delay * 3600e3;
+    if (at > now) out.push({ key: r.id + '_1', at, repeat: 'none', n: r.n, title: T, body: r.note || 'Aaj ka din hai', mainId: r.ids[1][0] });
+  } else if (r.kind === 'yearly') {
+    const d = new Date(r.date + 'T00:00'), y = new Date().getFullYear();
+    let at = new Date(y, d.getMonth(), d.getDate()).getTime() + r.delay * 3600e3;
+    if (at <= now) at = new Date(y + 1, d.getMonth(), d.getDate()).getTime() + r.delay * 3600e3;
+    out.push({ key: r.id + '_1', at, repeat: 'yearly', n: r.n, title: T, body: r.note || 'Aaj ka din hai', mainId: r.ids[1][0] });
+  } else {
+    slotsOf(r).forEach(([h, m], s) => out.push({ key: r.id + '_' + s, at: at0(h, m, 0, false).getTime(), repeat: 'daily', n: r.n, title: T, body: r.note || (r.kind === 'water' ? 'Paani peene ka time ho gaya' : 'Yaad dilane ka time ho gaya'), mainId: r.ids[s][0] }));
   }
   return out;
 }
@@ -218,10 +241,14 @@ async function schedule(r) {
     if (p.display !== 'granted') { $('err').textContent = 'Settings me notification allow karo, tabhi reminder bajega.'; return false; }
     await makeChannels(r);
     const n = build(r); if (n.length) await LN.schedule({ notifications: n });
+    if (NATIVE) await OP.schedule({ entries: nativeEntries(r) });
     return true;
   } catch (e) { $('err').textContent = 'Reminder set nahi hua: ' + e.message; return false; }
 }
-const cancel = r => LN ? LN.cancel({ notifications: r.ids.flat().concat(r.sid ? [r.sid] : []).map(id => ({ id })) }).catch(() => {}) : Promise.resolve();
+const cancel = async r => {
+  if (NATIVE) { try { await OP.cancel({ keys: nativeKeys(r) }); } catch (e) {} }
+  if (LN) { try { await LN.cancel({ notifications: r.ids.flat().concat(r.sid ? [r.sid] : []).map(id => ({ id })) }); } catch (e) {} }
+};
 
 /* Done dabane pe baki 5-minute repeats band */
 async function done(x) {
@@ -230,7 +257,8 @@ async function done(x) {
   const s = x.slot, dateKind = r.kind === 'once' || r.kind === 'yearly';
   try {
     if (LN && r.sid) { try { await LN.cancel({ notifications: [{ id: r.sid }] }); } catch (e) {} }
-    if (!(dateKind && s === 0)) {
+    if (NATIVE) { try { await OP.stopChain({ key: r.id + '_' + s }); } catch (e) {} }
+    else if (!(dateKind && s === 0)) {
       const from = r.kind === 'once' ? 0 : 1;
       if (LN) await LN.cancel({ notifications: r.ids[s].slice(from).map(id => ({ id })) });
       if (r.kind === 'daily' || r.kind === 'water') {
@@ -246,7 +274,7 @@ async function done(x) {
 let cur = null;
 function popup(n) {
   if (!n || !n.extra || !n.extra.rid) return;
-  cur = n.extra; $('pt').textContent = n.title || 'Reminder'; $('pico').innerHTML = ic(CATS.other.p); $('pop').classList.add('show');
+  cur = n.extra; $('pt').textContent = n.title || 'Reminder'; $('pn').textContent = (n.body && n.body !== 'Abhi tak Done nahi kiya') ? n.body : ''; $('pico').innerHTML = ic(CATS.other.p); $('pop').classList.add('show');
   try { navigator.vibrate && navigator.vibrate([500, 200, 500, 200, 500]); } catch (e) {}
 }
 $('ps').onclick = async () => { $('pop').classList.remove('show'); const c = cur; cur = null; await snooze(c); render(); };
@@ -256,13 +284,15 @@ async function checkDelivered() {
   try { const d = await LN.getDeliveredNotifications(); const n = (d.notifications || []).find(x => x.extra && x.extra.rid); if (n) popup(n); } catch (e) {}
 }
 async function rearm() {
-  if (!LN) return;
+  if (!LN || NATIVE) return;
   for (const r of items) if (r.on && r.kind === 'yearly') { const l = yearlyFollow(r); if (l.length) { try { await LN.schedule({ notifications: l }); } catch (e) {} } }
 }
 
 async function snooze(x) {
   if (!x) return; const r = items.find(i => i.id === x.rid); if (!r) return;
-  await done(x); if (!r.sid) { r.sid = nextId(); store(); }
+  await done(x);
+  if (NATIVE) { try { await OP.snooze({ key: r.id + '_' + x.slot, minutes: 10 }); } catch (e) {} toast('10 minute baad yaad dilaunga'); return; }
+  if (!r.sid) { r.sid = nextId(); store(); }
   if (LN) { try { await LN.schedule({ notifications: [{ id: r.sid, title: titleOf(r), body: 'Snooze ke baad yaad dilana', channelId: chan(r, CH_A), actionTypeId: 'DONE', extra: { rid: r.id, slot: x.slot, k: 0 }, schedule: { at: new Date(Date.now() + 600e3), allowWhileIdle: true } }] }); } catch (e) {} }
   toast('10 minute baad yaad dilaunga');
 }
@@ -472,11 +502,25 @@ let away = 0;
 document.addEventListener('visibilitychange', () => { if (document.hidden) away = Date.now(); else if (S.pin && Date.now() - away > 8000) lockNow(); });
 $('exp').onclick = exportData; $('imp').onclick = () => $('file').click();
 $('file').onchange = ev => { const f = ev.target.files[0]; if (f) importData(f); ev.target.value = ''; };
+let permNeed = '';
+async function checkPerm() {
+  if (!NATIVE) return;
+  try {
+    const st = await OP.status();
+    permNeed = !st.overlay ? 'overlay' : (!st.exact ? 'exact' : '');
+    $('perm').classList.toggle('hide', !permNeed);
+    $('perm-t').textContent = permNeed === 'exact' ? 'Alarm ki permission chahiye' : 'Popup ki permission chahiye';
+    $('perm-s').textContent = permNeed === 'exact' ? "Settings me 'Alarms & reminders' ON karo." : "Settings me 'Display over other apps' ON karo.";
+  } catch (e) {}
+}
+$('permbtn').onclick = () => { try { permNeed === 'exact' ? OP.openExactSettings() : OP.openOverlaySettings(); } catch (e) {} };
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkPerm(); });
+checkPerm();
 applyTheme(); lockNow();
 
 if (LN) {
   LN.registerActionTypes({ types: [{ id: 'DONE', actions: [{ id: 'done', title: 'Done' }, { id: 'snooze', title: '10 min baad' }] }] }).catch(() => {});
-  LN.addListener('localNotificationReceived', popup);
+  if (!NATIVE) LN.addListener('localNotificationReceived', popup);
   LN.addListener('localNotificationActionPerformed', e => { if (e.actionId === 'done') done(e.notification.extra).then(render); else if (e.actionId === 'snooze') snooze(e.notification.extra).then(render); else popup(e.notification); });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { checkDelivered(); rearm(); } });
   checkDelivered(); rearm();
