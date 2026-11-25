@@ -1,0 +1,50 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Add Android platform
+        run: npx cap add android
+
+      - name: Generate icons and splash
+        run: npx capacitor-assets generate --android --iconBackgroundColor '#0B0B0E' --iconBackgroundColorDark '#0B0B0E' --splashBackgroundColor '#0B0B0E' --splashBackgroundColorDark '#0B0B0E'
+
+      - name: Add permissions and sounds
+        run: |
+          sed -i 's#<application#<uses-permission android:name="android.permission.VIBRATE" />\n    <uses-permission android:name="android.permission.READ_CONTACTS" />\n    <application#' android/app/src/main/AndroidManifest.xml
+          mkdir -p android/app/src/main/res/raw
+          cp www/sounds/*.wav android/app/src/main/res/raw/
+
+      - name: Sync web files
+        run: npx cap sync android
+
+      - name: Build debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: namya-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
