@@ -35,6 +35,9 @@ jobs:
           mkdir -p android/app/src/main/res/raw
           cp www/sounds/*.wav android/app/src/main/res/raw/
 
+      - name: Add real popup layer
+        run: bash native/install.sh || bash native/uninstall.sh
+
       - name: Sync web files
         run: npx cap sync android
 
@@ -42,7 +45,11 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug || {
+            echo "::warning::Native popup failed to compile, building without it"
+            (cd .. && bash native/uninstall.sh)
+            ./gradlew assembleDebug
+          }
 
       - uses: actions/upload-artifact@v4
         with:
